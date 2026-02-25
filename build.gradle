@@ -1,0 +1,66 @@
+buildscript {
+    repositories {
+        maven { url = 'https://maven.minecraftforge.net/' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:6.+'
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+
+version = '1.1'
+group = 'com.DSG.mc.FreezeCam'
+
+base {
+    archivesName = 'freezecam'
+}
+
+compileJava {
+    getOptions().setEncoding("UTF-8")
+    sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+}
+
+minecraft {
+    mappings channel: 'snapshot', version: '20171003-1.12'
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            property 'forge.logging.console.level', 'debug'
+            arg '-torg.spongepowered.asm.launch.MixinTweaker'
+        }
+
+        server {
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            property 'forge.logging.console.level', 'debug'
+            arg '-torg.spongepowered.asm.launch.MixinTweaker'
+        }
+    }
+}
+
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2864'
+}
+
+jar.finalizedBy('reobfJar')
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact jar
+        }
+    }
+    repositories {
+        maven {
+            url "file:///${project.projectDir}/mcmodsrepo"
+        }
+    }
+}
